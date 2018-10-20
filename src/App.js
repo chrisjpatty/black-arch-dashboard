@@ -1,27 +1,36 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+// import format from 'date-fns/format'
+import Header from './Header'
+import Graphs from './Graphs'
+import { database } from './api'
+import 'normalize.css'
 import './App.css';
 
 class App extends Component {
+  state = {
+    scans: [],
+    stations: null
+  }
+  componentDidMount = () => {
+    this.fetchStations()
+  }
+  fetchStations = () => {
+    database
+      .collection("stations")
+      .get()
+      .then(querySnapshot => {
+        let stations = []
+        querySnapshot.forEach(ss => {stations.push(ss.data())})
+        this.setState({stations})
+      })
+  }
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        <Header />
+        <Graphs loading={!this.state.stations} stations={this.state.stations} />
       </div>
-    );
+    )
   }
 }
 
