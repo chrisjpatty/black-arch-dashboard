@@ -3,8 +3,11 @@ import { storiesOf, addDecorator } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import withBackgrounds from '@storybook/addon-backgrounds';
 import Component from './Component'
+import '../App.css'
 
 import ButtonRadio, { Button } from '../components/ButtonRadio'
+import Login from '../Login'
+import TextInput from '../components/TextInput'
 
 addDecorator(
   withBackgrounds([
@@ -41,4 +44,20 @@ storiesOf('Button', module)
   ))
   .add('Selected', () => (
     <Button selected={true}>Default Button</Button>
+  ))
+
+storiesOf('Login', module)
+  .add('Default', () => (
+    <Login />
+  ))
+
+storiesOf('TextInput', module)
+  .add('Default', () => (
+    <Component defaultState={{value: ""}}>
+      {
+        ({state, setState}) => (
+          <TextInput label="Username" value={state.value} onChange={value => {setState({value})}} />
+        )
+      }
+    </Component>
   ))
