@@ -1,8 +1,10 @@
+//
 import React from 'react'
 import styled from 'react-emotion'
 import ButtonRadio from './components/ButtonRadio'
 import { PERIODS, MEASUREMENTS } from './Constants'
 
+// DOM components for changing period and measurment vectors
 const Toolbar = ({
   period,
   measurement,

@@ -2,8 +2,8 @@ import React from 'react'
 import styled from 'react-emotion'
 import { Spring, config } from 'react-spring'
 
+// Generic DOM representation of a speedometer. Accepts a total and a current.
 const Speedometer = ({total, current}) => {
-
   const getRotation = () => {
     const percent = getPercentage()
     return 180 * percent

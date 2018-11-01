@@ -102,11 +102,11 @@ const Graph = ({ station, measurement, period }) => {
   const handleKeyPress = e => {
     if (e.keyCode === 38) {
       e.preventDefault()
-      setTargets(targets[`${measurement}_${period}`] + 1)
+      handleTargetChange(targets[`${measurement}_${period}`] + 1)
     }
     if (e.keyCode === 40) {
       e.preventDefault()
-      setTargets(targets[`${measurement}_${period}`] - 1)
+      handleTargetChange(targets[`${measurement}_${period}`] - 1)
     }
   }
 
@@ -127,6 +127,11 @@ const Graph = ({ station, measurement, period }) => {
         value={targets[`${measurement}_${period}`]}
       />
       <Speedometer total={total} current={current} />
+      <CurrentWrapper>
+        <Current>
+          {current}
+        </Current>
+      </CurrentWrapper>
     </Wrapper>
   )
 }
@@ -184,6 +189,29 @@ const TargetInput = styled('input')({
     outline: 'none',
     background: 'rgba(255,255,255,.25)'
   }
+})
+
+const CurrentWrapper = styled('div')({
+  position: 'absolute',
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'center',
+  left: 0,
+  bottom: '.5vw',
+  width: '100%',
+  zIndex: 5
+})
+
+const Current = styled('div')({
+  background: 'rgb(45, 45, 45)',
+  borderRadius: '2vw',
+  textAlign: 'center',
+  color: 'rgba(255, 255, 255, 0.8)',
+  fontFamily: 'sans-serif',
+  padding: '.5vw 1vw',
+  fontSize: '2.3vw',
+  fontWeight: 600,
+  minWidth: '3.5vw'
 })
 
 export default Graph

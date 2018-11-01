@@ -9,6 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
+  // Submit login request to Firebase and handle response.
   const submit = () => {
     firebase
       .auth()
@@ -20,8 +21,8 @@ const Login = () => {
       })
   }
 
+  // Check if the user has pressed [Enter]
   const handleKeyPress = e => {
-    // Check if the user has pressed [Enter]
     if (e.keyCode === 13) {
       submit()
     }

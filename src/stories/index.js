@@ -8,6 +8,7 @@ import '../App.css'
 import ButtonRadio, { Button } from '../components/ButtonRadio'
 import Login from '../Login'
 import TextInput from '../components/TextInput'
+import Speedometer from '../components/Speedometer'
 
 addDecorator(
   withBackgrounds([
@@ -60,4 +61,21 @@ storiesOf('TextInput', module)
         )
       }
     </Component>
+  ))
+
+storiesOf('Speedometer', module)
+  .add('Default', () => (
+    <Speedometer/>
+  ))
+  .add('0/10', () => (
+    <Speedometer current={0} total={10} />
+  ))
+  .add('5/10', () => (
+    <Speedometer current={5} total={10} />
+  ))
+  .add('10/100', () => (
+    <Speedometer current={10} total={100} />
+  ))
+  .add('100/100', () => (
+    <Speedometer current={100} total={100} />
   ))

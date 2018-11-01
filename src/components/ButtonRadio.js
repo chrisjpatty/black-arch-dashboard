@@ -6,26 +6,21 @@ const Wrapper = styled('div')({
   flexDirection: 'row'
 })
 
-export default class ButtonRadio extends React.Component {
-  render() {
-    const { buttons, value, onChange } = this.props
-    return (
-      <Wrapper>
-        {buttons.map((btn, i) => (
-          <Button
-            selected={btn.value === value}
-            onClick={() => {
-              onChange(btn.value)
-            }}
-            key={i}
-          >
-            {btn.label}
-          </Button>
-        ))}
-      </Wrapper>
-    )
-  }
-}
+const ButtonRadio = ({ buttons, value, onChange }) => (
+  <Wrapper>
+    {buttons.map((btn, i) => (
+      <Button
+        selected={btn.value === value}
+        onClick={() => {
+          onChange(btn.value)
+        }}
+        key={i}
+      >
+        {btn.label}
+      </Button>
+    ))}
+  </Wrapper>
+)
 
 export const Button = ({ selected, children, ...props }) => (
   <StyledButton {...props} selected={selected}>{children}</StyledButton>
@@ -54,3 +49,5 @@ const StyledButton = styled('button')(
     background: selected ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0)'
   })
 )
+
+export default ButtonRadio
