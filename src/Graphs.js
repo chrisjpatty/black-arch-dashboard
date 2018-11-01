@@ -1,7 +1,35 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'react-emotion'
 import Toolbar from './Toolbar'
 import Graph from './Graph'
+
+const Graphs = ({loading, stations}) => {
+  const [period, setPeriod] = useState('day')
+  const [measurement, setMeasurement] = useState('count')
+
+  return loading ? (
+    <span>Loading...</span>
+  ) : (
+    <Wrapper>
+      <Toolbar
+        period={period}
+        measurement={measurement}
+        onPeriodChange={setPeriod}
+        onMeasurementChange={setMeasurement}
+      />
+      <Grids>
+        {stations.map((station, i) => (
+          <Graph
+            station={station}
+            period={period}
+            measurement={measurement}
+            key={i}
+          />
+        ))}
+      </Grids>
+    </Wrapper>
+  )
+}
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -15,40 +43,4 @@ const Grids = styled('div')({
   paddingTop: '5vw'
 })
 
-export default class Graphs extends React.Component {
-  state = {
-    period: 'day',
-    measurement: 'count'
-  }
-  setPeriod = period => {
-    this.setState({ period })
-  }
-  setMeasurement = measurement => {
-    this.setState({ measurement })
-  }
-  render() {
-    const { loading, stations } = this.props
-    return loading ? (
-      <span>Loading...</span>
-    ) : (
-      <Wrapper>
-        <Toolbar
-          period={this.state.period}
-          measurement={this.state.measurement}
-          onPeriodChange={this.setPeriod}
-          onMeasurementChange={this.setMeasurement}
-        />
-        <Grids>
-          {stations.map((station, i) => (
-            <Graph
-              station={station}
-              period={this.state.period}
-              measurement={this.state.measurement}
-              key={i}
-            />
-          ))}
-        </Grids>
-      </Wrapper>
-    )
-  }
-}
+export default Graphs

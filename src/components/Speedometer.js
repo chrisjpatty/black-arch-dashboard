@@ -2,40 +2,39 @@ import React from 'react'
 import styled from 'react-emotion'
 import { Spring, config } from 'react-spring'
 
-class Speedometer extends React.Component {
-  getRotation = () => {
-    const percent = this.getPercentage()
+const Speedometer = ({total, current}) => {
+
+  const getRotation = () => {
+    const percent = getPercentage()
     return 180 * percent
   }
-  getPercentage = () => {
-    if (this.props.total >= this.props.current) {
-      return this.props.current / this.props.total
-    } else {
-      return 1
-    }
+
+  const getPercentage = () => {
+    if(total === 0) return 0;
+    if (total >= current) return current / total;
+    else return 1;
   }
-  render() {
-    return (
-      <InnerWrapper>
-        <Spring
-          from={{ rotation: 0 }}
-          to={{ rotation: this.getRotation() }}
-          config={config.stiff}
-        >
-          {styles => (
-            <CircleWrapper
-              style={{
-                transform: `rotate(${styles.rotation}deg)`
-              }}
-            >
-              <CircleHalf top />
-              <CircleHalf />
-            </CircleWrapper>
-          )}
-        </Spring>
-      </InnerWrapper>
-    )
-  }
+
+  return (
+    <InnerWrapper>
+      <Spring
+        from={{ rotation: 0 }}
+        to={{ rotation: getRotation() }}
+        config={config.stiff}
+      >
+        {styles => (
+          <CircleWrapper
+            style={{
+              transform: `rotate(${styles.rotation}deg)`
+            }}
+          >
+            <CircleHalf top />
+            <CircleHalf />
+          </CircleWrapper>
+        )}
+      </Spring>
+    </InnerWrapper>
+  )
 }
 
 const InnerWrapper = styled('div')({
@@ -44,7 +43,6 @@ const InnerWrapper = styled('div')({
   bottom: '2vw',
   width: '26vw',
   height: '16vw',
-  // background: 'blue',
   overflow: 'hidden',
   borderRadius: '.8vw'
 })
@@ -55,10 +53,8 @@ const CircleWrapper = styled('div')({
   bottom: '-13vw',
   width: '26vw',
   height: '26vw',
-  // background: 'red',
   borderRadius: '100%',
   overflow: 'hidden'
-  // transition: 'transform 500ms'
 })
 
 const CircleHalf = styled('div')(

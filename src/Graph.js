@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import styled from 'react-emotion'
 import { database } from './api'
 import subYears from 'date-fns/sub_years'
@@ -10,130 +10,125 @@ import differenceInSeconds from 'date-fns/difference_in_seconds'
 import Speedometer from './components/Speedometer'
 import { DEFAULT_TARGETS } from './Constants'
 
-export default class Graph extends React.Component {
-  state = {
-    targets: DEFAULT_TARGETS,
-    numScans: 0,
-    avg_duration: 0
+// Utility function for calculating the average in/out of all scans.
+const getAverageDuration = scans =>
+  scans.reduce(
+    (total, scan) =>
+      total + differenceInSeconds(scan.out.toDate(), scan.in.toDate()),
+    0
+  ) /
+  scans.length /
+  60
+
+// Utility function for calculating the date component for Firebase queries
+const getWhereDate = period => {
+  switch (period) {
+    case 'hour':
+      return subHours(new Date(), 1)
+    case 'week':
+      return subWeeks(new Date(), 1)
+    case 'month':
+      return subMonths(new Date(), 1)
+    case 'year':
+      return subYears(new Date(), 1)
+    case 'day':
+    default:
+      return subDays(new Date(), 1)
   }
-  unsubscribe = null
-  componentDidMount = () => {
-    this.attachScansListener()
-  }
-  componentDidUpdate = prevProps => {
-    if (prevProps.period !== this.props.period) {
-      this.unsubscribe()
-      this.attachScansListener()
-    }
-  }
-  selectTarget = () => {
-    this.targetInput.select()
-  }
-  setTarget = e => {
-    const value = typeof e === 'object' ? e.target.value.replace(/\D/g, '') : e < 0 ? 0 : e
-    this.setState(state => ({
-      targets: {
-        ...state.targets,
-        [`${this.props.measurement}_${this.props.period}`]: value
-      }
-    }))
-  }
-  handleKeyPress = e => {
-    if(e.keyCode === 38){
-      e.preventDefault()
-      this.setTarget(this.state.targets[`${this.props.measurement}_${this.props.period}`] + 1)
-    }
-    if(e.keyCode === 40){
-      e.preventDefault()
-      this.setTarget(this.state.targets[`${this.props.measurement}_${this.props.period}`] - 1)
-    }
-  }
-  attachScansListener = () => {
-    this.unsubscribe = database
-      .collection('stations')
-      .doc(`station_${this.props.station.id}`)
-      .collection('scans')
-      .where('out', '>', this.getWhereDate())
-      .orderBy('out', 'desc')
-      .onSnapshot(querySnapshot => {
-        let scans = []
-        querySnapshot.forEach(ss => {
-          scans.push(ss.data())
+}
+
+// Represents a single Graph component
+const Graph = ({ station, measurement, period }) => {
+  // Set initial state
+  const [targets, setTargets] = useState(DEFAULT_TARGETS)
+  const [numScans, setNumScans] = useState(0)
+  const [avg_duration, setAvgDuration] = useState(0)
+
+  // Initialize DOM ref for target input
+  const targetInput = useRef(null)
+
+  // Attach realtime listener
+  useEffect(
+    () => {
+      const unsubscribe = database
+        .collection('stations')
+        .doc(`station_${station.id}`)
+        .collection('scans')
+        .where('out', '>', getWhereDate(period))
+        .orderBy('out', 'desc')
+        .onSnapshot(querySnapshot => {
+          let scans = []
+          querySnapshot.forEach(ss => {
+            scans.push(ss.data())
+          })
+          const avg_duration = getAverageDuration(scans)
+          // Update state
+          setNumScans(scans.length)
+          setAvgDuration(avg_duration)
         })
-        const avg_duration = this.getAverageDuration(scans)
-        this.setState({ numScans: scans.length, avg_duration })
-      })
-  }
-  getAverageDuration = scans =>
-    scans.reduce(
-      (total, scan) =>
-        total + differenceInSeconds(scan.out.toDate(), scan.in.toDate()),
-      0
-    ) /
-    scans.length /
-    60
-  getWhereDate = () => {
-    switch (this.props.period) {
-      case 'hour':
-        return subHours(new Date(), 1)
-      case 'week':
-        return subWeeks(new Date(), 1)
-      case 'month':
-        return subMonths(new Date(), 1)
-      case 'year':
-        return subYears(new Date(), 1)
-      case 'day':
-      default:
-        return subDays(new Date(), 1)
-    }
-  }
-  getGraphVectors = () => {
-    switch (this.props.measurement) {
+      return unsubscribe
+    },
+    [period, measurement]
+  )
+
+  // Convert scan vectors into DOM-consumable vectors.
+  const getGraphVectors = () => {
+    switch (measurement) {
       case 'avg_duration':
         return {
-          total:
-            this.state.targets[
-              `${this.props.measurement}_${this.props.period}`
-            ] || 10,
-          current: this.state.avg_duration
+          total: targets[`${measurement}_${period}`] || 10,
+          current: avg_duration
         }
       case 'count':
       default:
         return {
-          total:
-            this.state.targets[
-              `${this.props.measurement}_${this.props.period}`
-            ] || 10,
-          current: this.state.numScans
+          total: targets[`${measurement}_${period}`] || 10,
+          current: numScans
         }
     }
   }
-  render() {
-    const { station } = this.props
-    const graphVectors = this.getGraphVectors()
-    return (
-      <Wrapper>
-        <Title className="graph-title">{station.name}</Title>
-        <TargetInput
-          innerRef={ref => {
-            this.targetInput = ref
-          }}
-          onFocus={this.selectTarget}
-          onChange={this.setTarget}
-          onKeyDown={this.handleKeyPress}
-          type="text"
-          className="graph-target"
-          value={
-            this.state.targets[`${this.props.measurement}_${this.props.period}`]
-          }
-        />
-        <Speedometer
-          total={graphVectors.total}
-          current={graphVectors.current}
-        />
-      </Wrapper>
-    )
+
+  // Update the value of the current target
+  const handleTargetChange = e => {
+    const value =
+      typeof e === 'object' ? e.target.value.replace(/\D/g, '') : e < 0 ? 0 : e
+    setTargets({
+      ...targets,
+      [`${measurement}_${period}`]: value
+    })
   }
+
+  // Check for Up/Down keypresses and increment/decrement target
+  const handleKeyPress = e => {
+    if (e.keyCode === 38) {
+      e.preventDefault()
+      setTargets(targets[`${measurement}_${period}`] + 1)
+    }
+    if (e.keyCode === 40) {
+      e.preventDefault()
+      setTargets(targets[`${measurement}_${period}`] - 1)
+    }
+  }
+
+  const selectTarget = () => targetInput.current.select()
+
+  const { total, current } = getGraphVectors()
+
+  return (
+    <Wrapper>
+      <Title className="graph-title">{station.name}</Title>
+      <TargetInput
+        innerRef={targetInput}
+        onFocus={selectTarget}
+        onChange={handleTargetChange}
+        onKeyDown={handleKeyPress}
+        type="text"
+        className="graph-target"
+        value={targets[`${measurement}_${period}`]}
+      />
+      <Speedometer total={total} current={current} />
+    </Wrapper>
+  )
 }
 
 const Wrapper = styled('div')({
@@ -190,3 +185,5 @@ const TargetInput = styled('input')({
     background: 'rgba(255,255,255,.25)'
   }
 })
+
+export default Graph

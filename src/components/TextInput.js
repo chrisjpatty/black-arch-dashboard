@@ -1,20 +1,18 @@
 import React from 'react'
 import styled from 'react-emotion'
 
-export default class TextInput extends React.Component{
-  onChange = e => {
+const TextInput = ({ label, value, type="text", onKeyDown = ()=>{}, onChange }) => {
+  const handleChange = e => {
     const value = e.target.value;
-    this.props.onChange(value)
+    onChange(value)
   }
-  render(){
-    const { label, value, type="text" } = this.props;
-    return(
-      <Wrapper>
-        <Label>{label}</Label>
-        <Input type={type} value={value} onChange={this.onChange}/>
-      </Wrapper>
-    )
-  }
+
+  return (
+    <Wrapper>
+      <Label>{label}</Label>
+      <Input type={type} value={value} onChange={handleChange} onKeyDown={onKeyDown}/>
+    </Wrapper>
+  )
 }
 
 const Wrapper = styled('div')({
@@ -51,3 +49,5 @@ const Input = styled('input')({
     background: 'rgba(255,255,255,.3)'
   }
 })
+
+export default TextInput

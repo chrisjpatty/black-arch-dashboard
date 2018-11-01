@@ -1,47 +1,56 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'react-emotion'
 import TextInput from './components/TextInput'
 import firebase from './api'
 import logo from './logo.png'
 
-export default class Login extends React.Component{
-  state = {
-    email: "",
-    password: "",
-    error: ""
+const Login = () => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+
+  const submit = () => {
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .catch(err => {
+        if (err.code === 'auth/invalid-email')
+          setError('The email or password you provided was not correct.')
+        console.error(err)
+      })
   }
-  submit = () => {
-    firebase.auth()
-    .signInWithEmailAndPassword(this.state.email, this.state.password)
-    .catch(err => {
-      if(err.code === 'auth/invalid-email'){
-        this.setState({
-          error: "The email or password you provided was not correct."
-        })
-      }
-      console.error(err)
-    });
+
+  const handleKeyPress = e => {
+    // Check if the user has pressed [Enter]
+    if (e.keyCode === 13) {
+      submit()
+    }
   }
-  setEmail = email => {this.setState({email})}
-  setPassword = password => {this.setState({password})}
-  render(){
-    return(
-      <Wrapper>
-        <LogoWrapper>
-          <Logo src={logo} />
-        </LogoWrapper>
-        <TextInput label="Email" value={this.state.email} onChange={this.setEmail}/>
-        <TextInput label="Password" type="password" value={this.state.password} onChange={this.setPassword} />
-        <SubmitButton onClick={this.submit} type="button">Submit</SubmitButton>
-        {
-          this.state.error &&
-          <ErrorWrapper>
-            {this.state.error}
-          </ErrorWrapper>
-        }
-      </Wrapper>
-    )
-  }
+
+  return (
+    <Wrapper>
+      <LogoWrapper>
+        <Logo src={logo} />
+      </LogoWrapper>
+      <TextInput
+        label="Email"
+        value={email}
+        onChange={setEmail}
+        onKeyDown={handleKeyPress}
+      />
+      <TextInput
+        label="Password"
+        type="password"
+        value={password}
+        onChange={setPassword}
+        onKeyDown={handleKeyPress}
+      />
+      <SubmitButton onClick={submit} type="button">
+        Submit
+      </SubmitButton>
+      {error && <ErrorWrapper>{error}</ErrorWrapper>}
+    </Wrapper>
+  )
 }
 
 const Wrapper = styled('div')({
@@ -76,10 +85,10 @@ const SubmitButton = styled('button')({
   marginTop: 10,
   marginBottom: 3,
   '&:hover': {
-    background: 'rgba(255,255,255,.8)',
+    background: 'rgba(255,255,255,.8)'
   },
   '&:active': {
-    background: 'rgba(255,255,255,.6)',
+    background: 'rgba(255,255,255,.6)'
   }
 })
 
@@ -91,3 +100,5 @@ const ErrorWrapper = styled('p')({
   paddingTop: 6,
   borderRadius: 4
 })
+
+export default Login

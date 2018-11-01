@@ -2,26 +2,28 @@ import React from 'react'
 import styled from 'react-emotion'
 import firebase from './api'
 
-export default class Header extends React.Component{
-  logout = () => {
+const Footer = () => {
+  const logout = () => {
     firebase.auth().signOut()
   }
-  render(){
-    return(
-      <Wrapper>
-        <RightAlign>
-          <Button onClick={this.logout}>Logout</Button>
-        </RightAlign>
-      </Wrapper>
-    )
-  }
+
+  return (
+    <Wrapper>
+      <RightAlign>
+        <Button onClick={logout}>Logout</Button>
+      </RightAlign>
+    </Wrapper>
+  )
 }
 
-const Wrapper = styled('header')({
+const Wrapper = styled('footer')({
   display: 'flex',
   flexDirection: 'row',
   padding: 20,
-  paddingBottom: 0
+  position: 'absolute',
+  left: 0,
+  bottom: 0,
+  width: '100%'
 })
 
 const RightAlign = styled('div')({
@@ -35,3 +37,5 @@ const Button = styled('button')({
   textTransform: 'uppercase',
   fontWeight: 600
 })
+
+export default Footer
