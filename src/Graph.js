@@ -14,7 +14,7 @@ import { DEFAULT_TARGETS } from './Constants'
 const getAverageDuration = scans =>
   (scans.reduce(
     (total, scan) =>
-      total + scan.out && scan.in ? differenceInSeconds(scan.out.toDate(), scan.in.toDate()) : 0,
+      total + (scan.out !== undefined && scan.in !== undefined ? differenceInSeconds(scan.out.toDate(), scan.in.toDate()) : 0),
     0
   ) /
   scans.length /
