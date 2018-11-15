@@ -12,13 +12,13 @@ import { DEFAULT_TARGETS } from './Constants'
 
 // Utility function for calculating the average in/out of all scans.
 const getAverageDuration = scans =>
-  scans.reduce(
+  (scans.reduce(
     (total, scan) =>
       total + scan.out && scan.in ? differenceInSeconds(scan.out.toDate(), scan.in.toDate()) : 0,
     0
   ) /
   scans.length /
-  60
+  60).toFixed(2)
 
 // Utility function for calculating the date component for Firebase queries
 const getWhereDate = period => {
