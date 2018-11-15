@@ -43,7 +43,7 @@ const App = () => {
       {
         loggedIn ?
         <React.Fragment>
-          <Graphs loading={!stations} stations={stations} />
+          <Graphs loading={stations.length === 0} stations={stations} />
           <Footer />
         </React.Fragment>
         :
