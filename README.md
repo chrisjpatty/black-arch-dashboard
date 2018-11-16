@@ -5,24 +5,24 @@
 - Yarn
 - Node 7+
 
-## Installing the dashboard locally
+### Installing the dashboard locally
 1. Clone the repository.
 2. Open a terminal to the root of the project folder.
 3. Run `yarn` and wait for dependencies to install.
 
-## Running the dashboard locally
+### Running the dashboard locally
 
 1. Open a terminal to the root of the project folder.
 2. Run `yarn start`
 3. If your browser doesn't open automatically, open your browser to `localhost:3000`
 4. Make any changes and save in your text editor. The browser should refresh automatically.
 
-## Building the site for production
+### Building the site for production
 
 1. Open a terminal to the root of the project folder.
 2. Run `yarn build`
 
-## Project organization
+### Project organization
 
 - `src` contains all the `react` code.
 - `src/components` contains reusable react components.
