@@ -139,6 +139,7 @@ const Graph = ({ station, measurement, period }) => {
 const Wrapper = styled('div')({
   width: '30vw',
   height: '20vw',
+  margin: '1vw',
   position: 'relative',
   // border: '3px solid rgba(255, 255, 255, 0.10)',
   background: 'rgba(255, 255, 255, 0.05)',
