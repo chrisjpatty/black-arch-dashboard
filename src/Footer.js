@@ -42,7 +42,7 @@ const Button = styled('button')({
 const Disclaimer = ({onDismiss}) => (
   <DWrapper>
     <DModal>
-      Disclaimer goes here
+      This project has been developed as part of a classroom learning experience by students at Utah State University.  While efforts are made to ensure copyrights and intellectual property rights have not been violated, it is the responsibility of the organization using any classroom projects created by USU and its students to make sure the materials contained therein do not infringe the property rights (including without limitation rights of privacy and publicity, trademark rights, copyrights, patents, trade secrets, and licenses) of third parties.
     </DModal>
     <DShade onClick={onDismiss}/>
   </DWrapper>
@@ -57,12 +57,14 @@ const DWrapper = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  padding: 100
+  padding: 100,
+  zIndex: 99
 })
 
 const DModal = styled('div')({
   background: '#fff',
   borderRadius: 10,
+  maxWidth: 600,
   padding: 20,
   color: '#000'
 })
